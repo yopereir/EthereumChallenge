@@ -2,23 +2,22 @@ const Token = artifacts.require("Token");
 const Contribution = artifacts.require("Contribution");
 let donationAmount = 5;
 let _startTime=100;
-let _endTime=101;
-
+let _endTime=1999999999;
+let ethToTokenRate=3;
 contract("Testing", async ()=> {
+    let t = await Token.new(_startTime,_endTime);
+    let c = await Contribution.new(t.address,ethToTokenRate);
     describe("Testing during valid timeframe", async ()=>{
     describe("Contribution Contract",()=>{
     describe("donate()",()=>{
         it("Event- DonationMade", async () => {
-            let c = await Contribution.deployed();
             let result = await c.donate(donationAmount);
-            let acquired = result.logs[0].event;
-            assert.equal(acquired, 'DonationMade');
+            assert.equal(result.logs[0].event, 'DonationMade');
         });
     });
     describe("getDonationByAddress()",()=>{
         it("Default address",async ()=>{
-            let c = await Contribution.deployed();
-            let result = await c.getDonationByAddress('0x34d570ddbcd404472c510f8978ac00cf9ca6dadb');
+            let result = await c.getDonationByAddress(accounts[0]);
             assert.equal(result.words[0], donationAmount);
         });
     });
@@ -26,27 +25,21 @@ contract("Testing", async ()=> {
     });
 
     describe("Change timeframe", async ()=>{
-        it("TimeChanged", async ()=>{
-            let t = await Token.deployed();
-            let result = await t.changeTimeframe(_startTime,_endTime);
-            let acquired = result.logs[0].event;
-            assert.equal(acquired,'TimeChanged')
+        it("TimeChanged to 100-101", async ()=>{
+            let result = await t.changeTimeframe(100,101);
+            assert.equal(result.logs[0].event,'TimeChanged')
         });
     });
     describe("Testing during Invalid timeframe", async () => {
         describe("Contribution Contract",()=>{
         describe("donate()",()=>{
             it("Event- DonationMade InvalidTime", async () => {
-                let c = await Contribution.deployed();
-                let result = await c.donate(donationAmount);
-                let acquired = result.logs[0].event;
-                assert.throws(acquired);
+                assert.throws(c.donate(donationAmount));
             });
         });
         describe("getDonationByAddress() InvalidTime",()=>{
             it("Default address",async ()=>{
-                let c = await Contribution.deployed();
-                let result = await c.getDonationByAddress('0x34d570ddbcd404472c510f8978ac00cf9ca6dadb');
+                let result = await c.getDonationByAddress(accounts[0]);
                 assert.equal(result.words[0], donationAmount);
             });
         });

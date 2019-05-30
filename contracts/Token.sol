@@ -14,16 +14,20 @@ contract Token is ERC20Mintable,Ownable {
       _endTime = _EndTime;
   }
 
-    //@dev overriding the mint function to check for start and end time and emits TokenMinted event whenever token is minted to an address
+    //@dev overriding the transfer function to check for start and end time and emits TokenMinted event whenever token is minted to an address
+    //@dev if time range is valid, it will call the super transfer function of ERC20Mintable.
     //@return false if time is not between start and end, true if it is and _mint() is successful
-    function mint(address to, uint256 value) public returns (bool) {
+    function transfer(address to, uint256 value) public returns (bool) {
         if(_startTime <= now && now <= _endTime) {
-            _mint(to, value);
-            emit TokenMinted(to,value);
-            return true;
+            if(super.transfer(address(this),value)){
+                emit TokenMinted(to,value);
+                return true;
+            }
+            else return false;
         }
         else return false;
     }
+
     //@notice only owner can change timeframe
     //@dev event is emitted when time is changed
     function changeTimeframe(uint _StartTime, uint _EndTime) public onlyOwner{

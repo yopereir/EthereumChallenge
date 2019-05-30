@@ -23,7 +23,7 @@ using SafeMath for uint256;
         require(amountInEther != 0, 'You donated 0 ether, hence nothing was done :(');
         userEtherDonated[msg.sender] = userEtherDonated[msg.sender].add(amountInEther);
         uint tokensToGet = tokensToMint(amountInEther);
-        revert(tokenContractReference.mint(msg.sender,tokensToGet));
+        require(tokenContractReference.transfer(msg.sender,tokensToGet),"Token transfer failed");
         emit DonationMade(msg.sender,amountInEther,tokensToGet);
     }
 
