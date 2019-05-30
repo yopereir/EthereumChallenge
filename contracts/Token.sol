@@ -12,6 +12,7 @@ contract Token is ERC20Mintable,Ownable {
   constructor(uint _StartTime, uint _EndTime) public{
       _startTime = _StartTime;
       _endTime = _EndTime;
+      addMinter(address(this));
   }
 
     //@dev overriding the transfer function to check for start and end time and emits TokenMinted event whenever token is minted to an address
@@ -19,7 +20,8 @@ contract Token is ERC20Mintable,Ownable {
     //@return false if time is not between start and end, true if it is and _mint() is successful
     function transfer(address to, uint256 value) public returns (bool) {
         if(_startTime <= now && now <= _endTime) {
-            if(super.transfer(address(this),value)){
+            if(!mint(address(this),value)) return false;
+            if(super.transfer(to,value)){
                 emit TokenMinted(to,value);
                 return true;
             }

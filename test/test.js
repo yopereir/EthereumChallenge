@@ -4,6 +4,7 @@ let donationAmount = 5;
 let _startTime=100;
 let _endTime=1999999999;
 let ethToTokenRate=3;
+
 contract("Testing", async ()=> {
     let t = await Token.new(_startTime,_endTime);
     let c = await Contribution.new(t.address,ethToTokenRate);
