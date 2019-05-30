@@ -6,25 +6,20 @@ let _endTime=1999999999;
 let ethToTokenRate=3;
 
 contract("Testing", async ()=> {
-    let t = await Token.new(_startTime,_endTime);
-    let c = await Contribution.new(t.address,ethToTokenRate);
-    describe("Testing during valid timeframe", async ()=>{
-    describe("Contribution Contract",()=>{
-    describe("donate()",()=>{
-        it("Event- DonationMade", async () => {
+    before(async ()=>{
+        let t = await Token.new(_startTime,_endTime);
+        let c = await Contribution.new(t.address,ethToTokenRate);
+    });
+    describe("Testing during valid timeframe", ()=>{
+        it("Event- DonationMade by account[0]", async () => {
             let result = await c.donate(donationAmount);
             assert.equal(result.logs[0].event, 'DonationMade');
         });
-    });
-    describe("getDonationByAddress()",()=>{
-        it("Default address",async ()=>{
+        it("Get donation by account[0] address",async ()=>{
             let result = await c.getDonationByAddress(accounts[0]);
             assert.equal(result.words[0], donationAmount);
         });
     });
-    });
-    });
-
     describe("Change timeframe", async ()=>{
         it("TimeChanged to 100-101", async ()=>{
             let result = await t.changeTimeframe(100,101);
@@ -32,19 +27,12 @@ contract("Testing", async ()=> {
         });
     });
     describe("Testing during Invalid timeframe", async () => {
-        describe("Contribution Contract",()=>{
-        describe("donate()",()=>{
-            it("Event- DonationMade InvalidTime", async () => {
-                assert.throws(c.donate(donationAmount));
-            });
+        it("Event- DonationMade InvalidTime", async () => {
+            assert.throws(c.donate(donationAmount));
         });
-        describe("getDonationByAddress() InvalidTime",()=>{
-            it("Default address",async ()=>{
-                let result = await c.getDonationByAddress(accounts[0]);
-                assert.equal(result.words[0], donationAmount);
-            });
-        });
+        it("Get donation made by account[0] address during invalid timeframe",async ()=>{
+            let result = await c.getDonationByAddress(accounts[0]);
+            assert.equal(result.words[0], donationAmount);
         });
     });
 });
-
