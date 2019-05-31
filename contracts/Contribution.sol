@@ -41,6 +41,6 @@ using SafeMath for uint256;
 
     //@dev a private view function that converts ether to tokens to be minted
     function tokensToMint(uint amountInEther) private view returns(uint) {
-        return ethToTokenRate * amountInEther;
+        return ethToTokenRate.mul(amountInEther);
     }
 }
